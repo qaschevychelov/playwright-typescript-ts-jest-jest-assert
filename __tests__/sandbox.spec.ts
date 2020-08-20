@@ -4,19 +4,15 @@ import { chromium } from "playwright";
 let page: any;
 let browser: any;
 
-describe("Sandbox", () => {
+describe("Проверка почты", () => {
   beforeAll(async () => {
-    browser = process.env.GITHUB_ACTIONS
-      ? await chromium.launch()
-      : await chromium.launch({ headless: false });
-    page = await browser.newPage();
+    browser = await chromium.launch({headless: false});
+    const context = await browser.newContext({
+      viewport: {width: 1920, height: 1080}
+    });
+    page = await context.newPage();
 
-    await page
-      .goto("https://e2e-boilerplate.github.io/sandbox/", {
-        waitUntil: "networkidle0",
-      })
-      // tslint:disable-next-line:no-empty
-      .catch(() => {});
+    await page.goto("https://ej2.syncfusion.com/showcase/typescript/webmail/#/home").catch(() => {});
   });
 
   afterAll(() => {
@@ -25,14 +21,13 @@ describe("Sandbox", () => {
     }
   });
 
-  test("should be on the sandbox", async () => {
-    await page.waitForSelector("h1");
-    const title = await page.$eval(
-      "h1",
-      (el: { textContent: any }) => el.textContent
-    );
+  test("Ассертим почту", async () => {
+    await page.click("dfgdfg");
 
-    assert.strictEqual(await page.title(), "Sandbox");
-    assert.strictEqual(title, "Sandbox");
+    let titile = await page.eval('#sub', (element: {textContent: any}) => {
+      element.textContent
+    });
+    assert.strictEqual(titile, "Oscar Mcconnell", "Отображается неправильное сообщение");
+
   });
-});
+})
